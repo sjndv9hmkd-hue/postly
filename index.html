@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Postly - AI 콘텐츠 제작 MVP" />
+  <title>Postly — AI 콘텐츠 스튜디오</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="#">Postly<span>.</span></a><nav><a href="#features">기능</a><a href="#studio">스튜디오</a><button class="ghost" id="loginBtn">로그인</button></nav></header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">AI SOCIAL CONTENT STUDIO</div>
+      <h1>아이디어부터 카드뉴스까지<br><em>한 번에 완성.</em></h1>
+      <p>업종과 목적만 고르면 AI가 주제를 제안하고, 6장 카드뉴스 초안을 바로 만들어줍니다.</p>
+      <a class="primary" href="#studio">무료로 시작하기 →</a>
+      <div class="hero-card"><div class="mini-title">오늘의 콘텐츠</div><strong>퇴근 후 10분, 삶의 질을 올리는 루틴 5가지</strong><div class="chips"><span>#자기관리</span><span>#라이프스타일</span><span>#루틴</span></div></div>
+    </section>
+
+    <section id="features" class="features">
+      <article><b>01</b><h3>4가지 제작 모드</h3><p>업체 홍보 · 정보성 · 퍼스널 브랜딩 · 대행사 콘텐츠에 맞춰 시작합니다.</p></article>
+      <article><b>02</b><h3>AI 주제 추천</h3><p>키워드를 입력하면 바로 써먹을 수 있는 콘텐츠 주제를 제안합니다.</p></article>
+      <article><b>03</b><h3>6장 자동 구성</h3><p>표지부터 CTA까지 흐름이 있는 카드뉴스 카피를 자동 구성합니다.</p></article>
+    </section>
+
+    <section id="studio" class="studio">
+      <div class="section-head"><div><span>POSTLY STUDIO</span><h2>무엇을 만들까요?</h2></div><p>모드를 선택하고 키워드를 입력하세요.</p></div>
+      <div class="modes" id="modes">
+        <button class="mode active" data-mode="업체 홍보">🏪<b>업체 홍보</b><small>매장·서비스 홍보</small></button>
+        <button class="mode" data-mode="정보성">💡<b>정보성</b><small>팁·노하우 콘텐츠</small></button>
+        <button class="mode" data-mode="퍼스널 브랜딩">✨<b>퍼스널 브랜딩</b><small>전문성·스토리 구축</small></button>
+        <button class="mode" data-mode="대행사">⚡<b>대행사</b><small>클라이언트 콘텐츠</small></button>
+      </div>
+
+      <div class="generator">
+        <label>콘텐츠 키워드</label>
+        <div class="inputrow"><input id="keyword" placeholder="예: 신림 카페, 자기관리 루틴, 피부관리"/><button class="primary" id="ideaBtn">AI 주제 만들기</button></div>
+        <div id="ideas" class="ideas"></div>
+      </div>
+
+      <div id="editor" class="editor hidden">
+        <div class="editor-head"><div><span>CAROUSEL EDITOR</span><h2 id="editorTitle">6장 카드뉴스</h2></div><div class="template-picker"><button class="template active" data-template="clean">Clean</button><button class="template" data-template="bold">Bold</button><button class="template" data-template="editorial">Editorial</button></div></div>
+        <div class="workspace"><div class="canvas-wrap"><div class="card clean" id="cardPreview"><div class="pageNo">01 / 06</div><div class="cardKicker" id="cardKicker">POSTLY PICK</div><h3 id="cardTitle" contenteditable="true"></h3><p id="cardBody" contenteditable="true"></p><div class="cardFooter">postly • swipe →</div></div><div class="pager"><button id="prev">←</button><span id="pageLabel">1 / 6</span><button id="next">→</button></div></div><aside><h3>페이지 편집</h3><label>제목</label><textarea id="titleInput"></textarea><label>본문</label><textarea id="bodyInput"></textarea><button class="primary full" id="saveBtn">PNG로 저장</button><p class="hint">현재 보이는 카드 1장을 이미지로 저장합니다.</p></aside></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><a class="brand" href="#">Postly<span>.</span></a><p>콘텐츠 만드는 시간을 줄이고, 브랜드에 집중하세요.</p><small>© 2026 Postly MVP</small></footer>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
