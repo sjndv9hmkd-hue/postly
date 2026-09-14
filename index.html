@@ -1,55 +1,98 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Postly - AI 콘텐츠 제작 MVP" />
-  <title>Postly — AI 콘텐츠 스튜디오</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Postly 카드뉴스 데스크톱 스튜디오">
+  <title>Postly — 카드뉴스 스튜디오</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="#">Postly<span>.</span></a><nav><a href="#features">기능</a><a href="#studio">스튜디오</a><button class="ghost" id="loginBtn">로그인</button></nav></header>
+<header class="topbar">
+  <div><a class="brand" href="#">Postly<span>.</span></a><small class="desktop-badge">DESKTOP</small></div>
+  <div class="top-actions"><button class="ghost" id="historyBtn">최근 작업</button><button class="ghost" id="helpBtn">사용법</button></div>
+</header>
 
-  <main>
-    <section class="hero">
-      <div class="eyebrow">AI SOCIAL CONTENT STUDIO</div>
-      <h1>아이디어부터 카드뉴스까지<br><em>한 번에 완성.</em></h1>
-      <p>업종과 목적만 고르면 AI가 주제를 제안하고, 6장 카드뉴스 초안을 바로 만들어줍니다.</p>
-      <a class="primary" href="#studio">무료로 시작하기 →</a>
-      <div class="hero-card"><div class="mini-title">오늘의 콘텐츠</div><strong>퇴근 후 10분, 삶의 질을 올리는 루틴 5가지</strong><div class="chips"><span>#자기관리</span><span>#라이프스타일</span><span>#루틴</span></div></div>
+<main>
+  <section class="hero">
+    <div class="eyebrow">NO LOGIN · EASY CAROUSEL MAKER</div>
+    <h1>처음이어도, 순서대로<br><em>누르면 완성.</em></h1>
+    <p>카테고리와 주제를 고르면 6장 카드뉴스 초안을 만들고, 원하는 디자인으로 한 번에 저장할 수 있어요.</p>
+    <div class="steps"><span class="active">1 카테고리</span><span>2 주제</span><span>3 디자인</span><span>4 저장·발행</span></div>
+  </section>
+
+  <section class="studio">
+    <div class="section-head"><div><span>STEP 1</span><h2>카테고리를 골라주세요</h2></div><p>누구나 바로 시작할 수 있어요.</p></div>
+    <div class="categories" id="categories">
+      <button class="category active" data-category="자기관리"><i>✦</i><b>자기관리</b><small>루틴·습관·마인드</small></button>
+      <button class="category" data-category="자기관리템"><i>♡</i><b>자기관리템</b><small>뷰티·웰니스 추천</small></button>
+      <button class="category" data-category="건강지식"><i>＋</i><b>건강지식</b><small>근거 중심 건강정보</small></button>
+      <button class="category" data-category="생활꿀팁"><i>⌁</i><b>생활꿀팁</b><small>돈·시간 절약 팁</small></button>
+      <button class="category" data-category="소상공인 홍보"><i>▦</i><b>매장 홍보</b><small>서비스·이벤트 소개</small></button>
+      <button class="category" data-category="직접 입력"><i>＋</i><b>직접 입력</b><small>내가 원하는 주제</small></button>
+    </div>
+
+    <div class="generator panel">
+      <div class="field">
+        <label>핵심 키워드 <small>선택사항</small></label>
+        <input id="keyword" placeholder="예: 수면, 영양제, 신림 네일숍">
+      </div>
+      <div class="field compact">
+        <label>말투</label>
+        <select id="tone"><option>깔끔하고 친근하게</option><option>전문적이고 신뢰감 있게</option><option>발랄하고 재치 있게</option><option>차분하고 감성적으로</option></select>
+      </div>
+      <button class="primary" id="ideaBtn">주제 12개 추천받기</button>
+    </div>
+
+    <section id="ideasSection" class="ideas-section hidden">
+      <div class="section-head"><div><span>STEP 2</span><h2>마음에 드는 주제를 골라주세요</h2></div><button class="ghost" id="refreshBtn">↻ 다른 주제 추천</button></div>
+      <div id="ideas" class="ideas"></div>
     </section>
 
-    <section id="features" class="features">
-      <article><b>01</b><h3>4가지 제작 모드</h3><p>업체 홍보 · 정보성 · 퍼스널 브랜딩 · 대행사 콘텐츠에 맞춰 시작합니다.</p></article>
-      <article><b>02</b><h3>AI 주제 추천</h3><p>키워드를 입력하면 바로 써먹을 수 있는 콘텐츠 주제를 제안합니다.</p></article>
-      <article><b>03</b><h3>6장 자동 구성</h3><p>표지부터 CTA까지 흐름이 있는 카드뉴스 카피를 자동 구성합니다.</p></article>
+    <section id="editor" class="editor hidden">
+      <div class="section-head"><div><span>STEP 3</span><h2 id="editorTitle">6장 카드뉴스</h2></div><span class="autosave">● 자동 저장됨</span></div>
+      <div class="template-strip" id="templates">
+        <button class="template active" data-template="minimal"><span class="swatch minimal"></span><b>미니멀</b></button>
+        <button class="template" data-template="pink"><span class="swatch pink"></span><b>핑크 라이프</b></button>
+        <button class="template" data-template="deepblue"><span class="swatch deepblue"></span><b>딥블루</b></button>
+        <button class="template" data-template="editorial"><span class="swatch editorial"></span><b>매거진</b></button>
+        <button class="template" data-template="check"><span class="swatch check"></span><b>체크리스트</b></button>
+        <button class="template" data-template="product"><span class="swatch product"></span><b>추천템</b></button>
+      </div>
+
+      <div class="editor-layout">
+        <aside class="thumbs" id="thumbs"></aside>
+        <div class="canvas-column">
+          <div class="card minimal" id="cardPreview">
+            <div class="decor decor-a"></div><div class="decor decor-b"></div>
+            <div class="pageNo">01 / 06</div>
+            <div class="cardKicker" id="cardKicker">POSTLY NOTE</div>
+            <h3 id="cardTitle"></h3><p id="cardBody"></p>
+            <div class="cardFooter"><span>POSTLY</span><span>SWIPE →</span></div>
+          </div>
+          <div class="pager"><button id="prev">← 이전</button><b id="pageLabel">1 / 6</b><button id="next">다음 →</button></div>
+        </div>
+        <aside class="edit-panel">
+          <h3>페이지 내용 수정</h3>
+          <label>작은 제목</label><input id="kickerInput">
+          <label>큰 제목</label><textarea id="titleInput"></textarea>
+          <label>설명</label><textarea id="bodyInput" class="body-input"></textarea>
+          <button class="secondary full" id="rewriteBtn">문구 더 자연스럽게</button>
+        </aside>
+      </div>
+
+      <div class="finish panel">
+        <div><span>STEP 4</span><h2>완성된 콘텐츠를 저장하세요</h2><p>1080×1350 비율로 카드 6장을 차례로 저장합니다.</p></div>
+        <div class="finish-actions"><button class="primary" id="saveAllBtn">PNG 6장 일괄 저장</button><button class="secondary" id="captionBtn">캡션 복사</button><button class="metricool" id="metricoolBtn">Metricool 열기 ↗</button></div>
+      </div>
+      <div class="caption-box"><label>게시용 캡션</label><textarea id="caption"></textarea></div>
     </section>
+  </section>
+</main>
 
-    <section id="studio" class="studio">
-      <div class="section-head"><div><span>POSTLY STUDIO</span><h2>무엇을 만들까요?</h2></div><p>모드를 선택하고 키워드를 입력하세요.</p></div>
-      <div class="modes" id="modes">
-        <button class="mode active" data-mode="업체 홍보">🏪<b>업체 홍보</b><small>매장·서비스 홍보</small></button>
-        <button class="mode" data-mode="정보성">💡<b>정보성</b><small>팁·노하우 콘텐츠</small></button>
-        <button class="mode" data-mode="퍼스널 브랜딩">✨<b>퍼스널 브랜딩</b><small>전문성·스토리 구축</small></button>
-        <button class="mode" data-mode="대행사">⚡<b>대행사</b><small>클라이언트 콘텐츠</small></button>
-      </div>
-
-      <div class="generator">
-        <label>콘텐츠 키워드</label>
-        <div class="inputrow"><input id="keyword" placeholder="예: 신림 카페, 자기관리 루틴, 피부관리"/><button class="primary" id="ideaBtn">AI 주제 만들기</button></div>
-        <div id="ideas" class="ideas"></div>
-      </div>
-
-      <div id="editor" class="editor hidden">
-        <div class="editor-head"><div><span>CAROUSEL EDITOR</span><h2 id="editorTitle">6장 카드뉴스</h2></div><div class="template-picker"><button class="template active" data-template="clean">Clean</button><button class="template" data-template="bold">Bold</button><button class="template" data-template="editorial">Editorial</button></div></div>
-        <div class="workspace"><div class="canvas-wrap"><div class="card clean" id="cardPreview"><div class="pageNo">01 / 06</div><div class="cardKicker" id="cardKicker">POSTLY PICK</div><h3 id="cardTitle" contenteditable="true"></h3><p id="cardBody" contenteditable="true"></p><div class="cardFooter">postly • swipe →</div></div><div class="pager"><button id="prev">←</button><span id="pageLabel">1 / 6</span><button id="next">→</button></div></div><aside><h3>페이지 편집</h3><label>제목</label><textarea id="titleInput"></textarea><label>본문</label><textarea id="bodyInput"></textarea><button class="primary full" id="saveBtn">PNG로 저장</button><p class="hint">현재 보이는 카드 1장을 이미지로 저장합니다.</p></aside></div>
-      </div>
-    </section>
-  </main>
-
-  <footer><a class="brand" href="#">Postly<span>.</span></a><p>콘텐츠 만드는 시간을 줄이고, 브랜드에 집중하세요.</p><small>© 2026 Postly MVP</small></footer>
-  <div class="toast" id="toast"></div>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="app.js"></script>
+<div class="modal hidden" id="helpModal"><div class="modal-card"><button class="modal-close">×</button><span>POSTLY GUIDE</span><h2>이렇게 사용하세요</h2><ol><li>콘텐츠 카테고리를 선택해요.</li><li>12가지 중 마음에 드는 주제를 골라요.</li><li>6장 문구와 디자인을 수정해요.</li><li>PNG를 저장하고 Metricool에서 예약해요.</li></ol><p class="notice">현재 버전은 Metricool을 열어주는 단계까지 지원합니다. 완전 자동발행은 별도의 API 연결이 필요합니다.</p></div></div>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
