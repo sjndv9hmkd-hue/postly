@@ -1,6 +1,6 @@
 {
   "name": "postly-desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Postly Instagram carousel desktop app",
   "main": "electron/main.js",
   "author": "Postly",
@@ -18,9 +18,21 @@
     "appId": "com.postly.desktop",
     "productName": "Postly",
     "asar": true,
-    "files": ["index.html", "styles.css", "app.js", "electron/**/*"],
-    "directories": {"output": "dist"},
-    "win": {"target": ["nsis"], "artifactName": "Postly-Setup-${version}.${ext}"},
+    "files": [
+      "index.html",
+      "styles.css",
+      "app.js",
+      "electron/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "Postly-Setup-${version}.${ext}"
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,

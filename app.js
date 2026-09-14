@@ -118,3 +118,81 @@ $('#helpBtn').onclick=()=>$('#helpModal').classList.remove('hidden');
 $('.modal-close').onclick=()=>$('#helpModal').classList.add('hidden');
 $('#helpModal').onclick=e=>{if(e.target.id==='helpModal')e.currentTarget.classList.add('hidden')};
 window.addEventListener('beforeunload',saveDraft);
+
+
+let monthlyPosts=[];
+const categoriesForMonth=[['자기관리','#countSelf'],['건강지식','#countHealth'],['생활꿀팁','#countLife'],['자기관리템','#countItem']];
+const desktop=window.postlyDesktop;
+(function initMonthly(){
+ const d=new Date();d.setDate(d.getDate()+1);$('#monthStart').value=d.toISOString().slice(0,10);
+ if(!desktop){$('#monthMessage').textContent='월간 자동화는 Windows 설치버전에서 사용할 수 있어요.';return}
+ loadQueue();desktop.onQueueUpdated(loadQueueView);
+})();
+async function openSettings(){
+ if(!desktop)return toast('Windows 설치버전에서 설정할 수 있어요.');
+ const s=await desktop.getSettings();
+ ['geminiKey','geminiModel','githubOwner','githubRepo','githubToken','githubBranch','igUserId','graphVersion','metaToken'].forEach(k=>{if($('#'+k))$('#'+k).value=s[k]||$('#'+k).value||''});
+ $('#startWithWindows').checked=s.startWithWindows!==false;$('#settingsModal').classList.remove('hidden');
+}
+$('#settingsBtn').onclick=openSettings;$('#settingsClose').onclick=()=>$('#settingsModal').classList.add('hidden');
+$('#saveSettingsBtn').onclick=async()=>{
+ const s={};['geminiKey','geminiModel','githubOwner','githubRepo','githubToken','githubBranch','igUserId','graphVersion','metaToken'].forEach(k=>s[k]=$('#'+k).value.trim());
+ s.startWithWindows=$('#startWithWindows').checked;await desktop.saveSettings(s);$('#settingsModal').classList.add('hidden');toast('연결 설정을 저장했어요.');
+};
+$('#generateMonthBtn').onclick=async()=>{
+ if(!desktop)return toast('Windows 설치버전에서 실행해주세요.');
+ const total=categoriesForMonth.reduce((n,[,id])=>n+Number($(id).value||0),0);
+ if(total!==30)return toast('카테고리 수량 합계를 30개로 맞춰주세요.');
+ const settings=await desktop.getSettings();if(!settings.geminiKey){toast('먼저 Gemini API 키를 설정해주세요.');return openSettings()}
+ $('#generateMonthBtn').disabled=true;monthlyPosts=[];const used=JSON.parse(localStorage.getItem('postly-history')||'[]').map(x=>x.topic);
+ try{
+   let done=0;
+   for(const [category,id] of categoriesForMonth){
+     const count=Number($(id).value||0);if(!count)continue;
+     $('#monthMessage').textContent=`${category} ${count}개를 AI가 작성 중이에요…`;
+     const posts=await desktop.generate({category,count,startDate:$('#monthStart').value,usedTopics:[...used,...monthlyPosts.map(x=>x.topic)]});
+     posts.slice(0,count).forEach(p=>monthlyPosts.push({...p,category}));
+     done=monthlyPosts.length;$('#monthCount').textContent=done;$('#monthProgress').style.width=(done/30*100)+'%';
+   }
+   localStorage.setItem('postly-month',JSON.stringify(monthlyPosts));renderMonthList();$('#monthMessage').textContent='30개 원고가 준비됐어요. 목록을 확인한 뒤 예약하세요.';toast('한 달치 원고 생성 완료!');
+ }catch(e){$('#monthMessage').textContent='생성 실패: '+e.message;toast('AI 생성에 실패했어요.')}
+ $('#generateMonthBtn').disabled=false;
+};
+function renderMonthList(){
+ if(!monthlyPosts.length)monthlyPosts=JSON.parse(localStorage.getItem('postly-month')||'[]');
+ $('#monthCount').textContent=monthlyPosts.length;
+ $('#monthList').innerHTML=monthlyPosts.map((p,i)=>`<article><b>${String(i+1).padStart(2,'0')}</b><div><small>${esc(p.category)}</small><h4 contenteditable="true" data-index="${i}">${esc(p.topic)}</h4><p>${esc((p.caption||'').slice(0,100))}</p></div></article>`).join('');
+}
+$('#reviewMonthBtn').onclick=()=>{renderMonthList();$('#monthList').classList.toggle('hidden');$('#monthList').scrollIntoView({behavior:'smooth'})};
+function datePlus(start,days){const d=new Date(start+'T00:00:00+09:00');d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
+async function cardToBase64(post,cardIndex,template){
+ cards=post.cards.map(x=>({k:x.kicker||x.k||'POSTLY NOTE',t:x.title||x.t,b:x.body||x.b}));
+ page=cardIndex;selectedTemplate=template;render();await new Promise(r=>setTimeout(r,60));
+ const canvas=await html2canvas($('#cardPreview'),{width:800,height:1000,scale:1.35,useCORS:true,backgroundColor:null});
+ return canvas.toDataURL('image/png').split(',')[1];
+}
+$('#queueMonthBtn').onclick=async()=>{
+ if(!desktop)return;renderMonthList();if(monthlyPosts.length!==30)return toast('먼저 원고 30개를 생성해주세요.');
+ const s=await desktop.getSettings();if(!s.githubToken||!s.igUserId||!s.metaToken){toast('GitHub와 Instagram 연결 설정이 필요해요.');return openSettings()}
+ if(!confirm('PNG 180장을 업로드하고 30일 예약을 만들까요? 시간이 몇 분 걸릴 수 있어요.'))return;
+ $('#queueMonthBtn').disabled=true;const templates=['minimal','pink','deepblue','editorial','check','product'];const queued=[];
+ try{
+  for(let i=0;i<monthlyPosts.length;i++){
+   const post=monthlyPosts[i],date=datePlus($('#monthStart').value,i),urls=[];
+   $('#monthMessage').textContent=`${i+1}/30 게시물 이미지 업로드 중…`;$('#monthProgress').style.width=(i/30*100)+'%';
+   for(let c=0;c<6;c++){
+    const base64=await cardToBase64(post,c,templates[i%templates.length]);
+    const path=`postly-media/${date}/${String(c+1).padStart(2,'0')}.png`;
+    urls.push(await desktop.uploadImage({path,base64}));
+   }
+   queued.push({id:crypto.randomUUID(),topic:post.topic,category:post.category,caption:post.caption,mediaUrls:urls,publishAt:new Date(`${date}T${$('#monthTime').value}:00+09:00`).toISOString(),status:'scheduled',attempts:0});
+  }
+  await desktop.addQueue(queued);$('#monthProgress').style.width='100%';$('#monthMessage').textContent='30개 예약 준비 완료. Postly를 종료하지 않으면 정해진 시간에 발행돼요.';loadQueue();toast('30일 예약이 완료됐어요.');
+ }catch(e){$('#monthMessage').textContent='예약 준비 실패: '+e.message;toast('중간에 실패했어요. 메시지를 확인해주세요.')}
+ $('#queueMonthBtn').disabled=false;
+};
+async function loadQueue(){if(desktop)loadQueueView(await desktop.getQueue())}
+function loadQueueView(q){
+ $('#queueList').innerHTML=(q||[]).slice().sort((a,b)=>a.publishAt.localeCompare(b.publishAt)).map(x=>`<div class="queue-row"><span class="status ${x.status}">${x.status}</span><b>${esc(x.topic)}</b><time>${new Date(x.publishAt).toLocaleString('ko-KR')}</time>${x.error?`<small>${esc(x.error)}</small>`:''}</div>`).join('')||'<p class="fine">예약된 콘텐츠가 없어요.</p>';
+}
+$('#refreshQueueBtn').onclick=loadQueue;

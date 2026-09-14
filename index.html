@@ -87,10 +87,51 @@
       </div>
       <div class="caption-box"><label>게시용 캡션</label><textarea id="caption"></textarea></div>
     </section>
+
+    <section class="monthly" id="monthly">
+      <div class="section-head"><div><span>MONTHLY AUTO MODE</span><h2>한 달치 30개를 한 번에</h2></div><button class="ghost" id="settingsBtn">⚙ 연결 설정</button></div>
+      <div class="monthly-grid">
+        <div class="panel monthly-config">
+          <h3>1. 생성 수량</h3>
+          <div class="count-grid">
+            <label>자기관리 <input id="countSelf" type="number" value="8" min="0" max="30"></label>
+            <label>건강지식 <input id="countHealth" type="number" value="8" min="0" max="30"></label>
+            <label>생활꿀팁 <input id="countLife" type="number" value="7" min="0" max="30"></label>
+            <label>자기관리템 <input id="countItem" type="number" value="7" min="0" max="30"></label>
+          </div>
+          <label>첫 발행일</label><input id="monthStart" type="date">
+          <label>매일 발행시간</label><input id="monthTime" type="time" value="13:00">
+          <button class="primary full" id="generateMonthBtn">AI로 한 달치 30개 만들기</button>
+          <p class="fine">Gemini 무료 한도 안에서 생성하며, 기존 주제와 겹치지 않게 요청합니다.</p>
+        </div>
+        <div class="panel monthly-status">
+          <h3>2. 검수 및 예약</h3>
+          <div class="big-number"><b id="monthCount">0</b><span>개 준비됨</span></div>
+          <div class="progress"><i id="monthProgress"></i></div>
+          <p id="monthMessage">먼저 연결 설정을 저장하고 한 달치 콘텐츠를 생성하세요.</p>
+          <div class="monthly-actions">
+            <button class="secondary full" id="reviewMonthBtn">30개 목록 검수</button>
+            <button class="primary full" id="queueMonthBtn">180장 업로드 후 예약</button>
+          </div>
+        </div>
+      </div>
+      <div id="monthList" class="month-list hidden"></div>
+      <div class="queue-box panel"><div><h3>발행 대기열</h3><p>Postly가 실행 중이면 예약시간에 Instagram으로 직접 발행합니다.</p></div><button class="ghost" id="refreshQueueBtn">새로고침</button><div id="queueList"></div></div>
+    </section>
   </section>
 </main>
 
-<div class="modal hidden" id="helpModal"><div class="modal-card"><button class="modal-close">×</button><span>POSTLY GUIDE</span><h2>이렇게 사용하세요</h2><ol><li>콘텐츠 카테고리를 선택해요.</li><li>12가지 중 마음에 드는 주제를 골라요.</li><li>6장 문구와 디자인을 수정해요.</li><li>PNG를 저장하고 Metricool에서 예약해요.</li></ol><p class="notice">현재 버전은 Metricool을 열어주는 단계까지 지원합니다. 완전 자동발행은 별도의 API 연결이 필요합니다.</p></div></div>
+
+<div class="modal hidden" id="settingsModal"><div class="modal-card settings-card">
+  <button class="modal-close" id="settingsClose">×</button><span>ONE-TIME SETUP</span><h2>Postly 연결 설정</h2>
+  <div class="setting-tabs">
+    <h3>무료 AI</h3><label>Gemini API 키</label><input id="geminiKey" type="password" placeholder="Google AI Studio에서 발급"><label>모델</label><input id="geminiModel" value="gemini-2.5-flash">
+    <h3>무료 이미지 저장소</h3><div class="two"><label>GitHub 사용자명<input id="githubOwner"></label><label>저장소 이름<input id="githubRepo" value="postly-media"></label></div><label>GitHub 토큰</label><input id="githubToken" type="password" placeholder="Contents 권한 토큰"><label>브랜치</label><input id="githubBranch" value="main">
+    <h3>Instagram 직접발행</h3><div class="two"><label>Instagram User ID<input id="igUserId"></label><label>Graph 버전<input id="graphVersion" value="v24.0"></label></div><label>Meta 장기 액세스 토큰</label><input id="metaToken" type="password"><label class="checkline"><input id="startWithWindows" type="checkbox" checked> Windows 로그인 시 Postly 자동실행</label>
+  </div>
+  <p class="secret-warning">키는 이 PC의 Postly 설정 폴더에만 저장됩니다. 공용 PC에서는 사용하지 마세요.</p>
+  <button class="primary full" id="saveSettingsBtn">설정 저장</button>
+</div></div><div class="modal hidden" id="helpModal"><div class="modal-card"><button class="modal-close">×</button><span>POSTLY GUIDE</span><h2>이렇게 사용하세요</h2><ol><li>콘텐츠 카테고리를 선택해요.</li><li>12가지 중 마음에 드는 주제를 골라요.</li><li>6장 문구와 디자인을 수정해요.</li><li>PNG를 저장하고 Metricool에서 예약해요.</li></ol><p class="notice">현재 버전은 Metricool을 열어주는 단계까지 지원합니다. 완전 자동발행은 별도의 API 연결이 필요합니다.</p></div></div>
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="app.js"></script>
