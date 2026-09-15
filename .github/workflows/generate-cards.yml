@@ -1,6 +1,9 @@
 name: Generate daily cards
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/generate-cards.yml
 permissions:
   contents: write
 jobs:
